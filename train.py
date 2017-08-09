@@ -193,8 +193,8 @@ def main():
     summary_writer = tf.summary.FileWriter(args.snapshot_dir,
                                            graph=tf.get_default_graph())
 
-    tf.summary.scalar('train_loss_hlc',reduced_loss)
-    merged = tf.summary.merge_all()
+    loss_output = tf.summary.scalar('train_loss_hlc',reduced_loss)
+    # merged = tf.summary.merge_all()
    
     # Define loss and optimisation parameters.
     base_lr = tf.constant(args.learning_rate)
@@ -242,11 +242,12 @@ def main():
         feed_dict = { step_ph : step }
         
         if step % args.save_pred_every == 0:
-            loss_value, images, labels, preds, summary, _ = sess.run([reduced_loss, image_batch, label_batch, pred, merged, train_op], feed_dict=feed_dict)
+            loss_value, images, labels, preds, summary, _ = sess.run([reduced_loss, image_batch, label_batch, pred, total_summary, train_op], feed_dict=feed_dict)
             summary_writer.add_summary(summary, step)
             save(saver, sess, args.snapshot_dir, step)
         else:
-            loss_value, _ = sess.run([reduced_loss, train_op], feed_dict=feed_dict)
+            loss_value, _ = sess.run([loss_output, train_op], feed_dict=feed_dict)
+            summary_writer.add_summary(loss_value, step)
         duration = time.time() - start_time
         print('step {:d} \t loss = {:.3f}, ({:.3f} sec/step)'.format(step, loss_value, duration))
     coord.request_stop()
