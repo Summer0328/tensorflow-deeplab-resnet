@@ -246,7 +246,7 @@ def main():
             summary_writer.add_summary(summary, step)
             save(saver, sess, args.snapshot_dir, step)
         else:
-            loss_value, _ = sess.run([loss_output, train_op], feed_dict=feed_dict)
+            loss_value, _ = sess.run([reduced_loss, train_op], feed_dict=feed_dict)
             summary_writer.add_summary(loss_value, step)
         duration = time.time() - start_time
         print('step {:d} \t loss = {:.3f}, ({:.3f} sec/step)'.format(step, loss_value, duration))
