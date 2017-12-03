@@ -54,6 +54,8 @@ def load(saver, sess, ckpt_path):
 def main():
     """Create the model and start the evaluation process."""
     args = get_arguments()
+
+    output_name = os.path.splitext(os.path.basename(args.img_path))[0]+"_mask.png"
     
     # Prepare image.
     img = tf.image.decode_jpeg(tf.read_file(args.img_path), channels=3)
@@ -95,9 +97,10 @@ def main():
     im = Image.fromarray(msk[0])
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
-    im.save(args.save_dir + 'mask.png')
+    output_path=os.path.join(args.save_dir,output_name)
+    im.save(output_path)
     
-    print('The output file has been saved to {}'.format(args.save_dir + 'mask.png'))
+    print('The output file has been saved to {}'.format(output_path))
 
     
 if __name__ == '__main__':
